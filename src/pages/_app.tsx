@@ -1,0 +1,55 @@
+import type { AppProps } from "next/app";
+import Head from "next/head";
+import Script from "next/script";
+
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { NextSeo } from "next-seo";
+
+import { APP_CONFIG } from "@/config/app";
+
+import global from "@/payloads/global";
+
+import "@/styles/global.scss";
+// import "bootstrap/dist/css/bootstrap.min.css";
+
+const App = ({ Component, pageProps }: AppProps) => {
+  return (
+    <>
+      <NextSeo {...global.seo} />
+      <Head>
+        <title>{global.headTitle}</title>
+        <link rel="icon" href={`${APP_CONFIG.basePath}/${global.favicon}`} />
+        <link rel="apple-touch-icon" href={`${APP_CONFIG.basePath}/${global.favicon}`} />
+      </Head>
+      <Component {...pageProps} />
+      <Analytics />
+      <SpeedInsights />
+      {/* Google Analytics */}
+      {global.analytics && global.analytics.google && (
+        <Script strategy="afterInteractive" id="google-analytics">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${global.analytics.google}');
+          `}
+        </Script>
+      )}
+      {/* Naver Analytics */}
+      {global.analytics && global.analytics.naver && (
+        <Script strategy="afterInteractive" id="naver-analytics" type="text/javascript">
+          {`
+            if(!wcs_add) var wcs_add = {};
+            wcs_add["wa"] = "${global.analytics.naver}";
+            if(window.wcs) {
+              wcs_do();
+            }
+          `}
+        </Script>
+      )}
+    </>
+  );
+};
+
+export default App;
